@@ -2,110 +2,147 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Sistema de Questionários Integrados</title>
+<title>Sistema de Revisão de Conteúdos</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
+:root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --bg-gradient: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+}
+
+body {
     margin:0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: #333;
 }
-.container{
-    max-width:1100px;
-    margin:40px auto;
-    background:#ffffff;
-    padding:30px;
-    border-radius:12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+
+.progress-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 8px;
+    background: rgba(255,255,255,0.2);
+    z-index: 1000;
 }
-h1{
-    text-align:center;
-    color: #1e293b;
+.progress-bar {
+    height: 100%;
+    background: #4ade80;
+    width: 0%;
+    transition: width 0.3s;
 }
-.materia-badge {
-    display: block;
-    text-align: center;
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: #f1f5f9;
-    padding: 10px;
+    padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
     font-weight: bold;
-    color: #475569;
-    border: 1px solid #e2e8f0;
 }
-.question{
+
+.question {
     background:#f9fafb;
-    padding:18px;
+    padding:20px;
     border-radius:10px;
     margin-bottom:20px;
     border-left:6px solid #cbd5e1;
-}
-.question.correct{border-left-color:#16a34a;}
-.question.wrong{border-left-color:#dc2626;}
-label{
-    display:block;
-    padding:8px;
-    margin:5px 0;
-    border-radius:6px;
-    cursor:pointer;
-    transition: 0.2s;
-}
-label:hover { background: #f1f5f9; }
-label.correct{background:#dcfce7 !important;}
-label.wrong{background:#fee2e2 !important;}
-button{
-    padding:14px;
-    border:none;
-    border-radius:8px;
-    font-size:16px;
-    margin-top:10px;
-    cursor:pointer;
-    font-weight: bold;
     transition: 0.3s;
 }
-.nav-buttons {
+
+.question.answered {
+    opacity: 0.95;
+    pointer-events: none; 
+}
+
+.question.correct { border-left-color: var(--success); background: #f0fdf4; }
+.question.wrong { border-left-color: var(--danger); background: #fef2f2; }
+
+label {
+    display:block;
+    padding:12px;
+    margin:8px 0;
+    border-radius:6px;
+    cursor:pointer;
+    border: 1px solid #e2e8f0;
+    transition: 0.2s;
+    background: white;
+}
+
+label.correct { background:#dcfce7 !important; border-color: #16a34a; font-weight: bold; color: #166534; }
+label.wrong { background:#fee2e2 !important; border-color: #dc2626; font-weight: bold; color: #991b1b; }
+
+.controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 20px;
 }
-.sortear{background:#2563eb; color:white; width: 100%;}
-.proximo{background:#6366f1; color:white; width: 100%;}
-.finalizar{background:#16a34a; color:white; width:100%; margin-top: 20px;}
-.resultado{
-    font-size:20px;
+
+button {
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+    cursor:pointer;
+    font-weight: bold;
+    color: white;
+}
+.btn-sortear { background:#2563eb; }
+.btn-trocar { background:#6366f1; }
+.btn-finalizar { background:#16a34a; width: 100%; margin-top: 10px; font-size: 18px; }
+
+.resultado-box {
+    font-size:22px;
     font-weight:bold;
     text-align:center;
     margin-top:20px;
-    padding: 15px;
+    padding: 20px;
     border-radius: 8px;
+    display: none;
 }
 </style>
 </head>
-
 <body>
-<div class="container">
-    <h1 id="titulo-pagina">Portal de Estudos</h1>
-    <div id="materia-nome" class="materia-badge">Matéria: Tecnologia Emergente</div>
 
-    <div class="nav-buttons">
-        <button class="sortear" onclick="sortear()">🔀 Embaralhar Questões</button>
-        <button class="proximo" onclick="alternarMateria()">📚 Trocar Questionário</button>
+<div class="progress-container"><div class="progress-bar" id="barra"></div></div>
+
+<div class="container">
+    <h1 style="text-align:center; margin-top:0; color: #1e293b;">Sistema de Revisão de Conteúdos</h1>
+    
+    <div class="header-info">
+        <div id="materia-txt">Matéria: TECNOLOGIA EMERGENTE E PROTAGONISMO</div>
+        <div id="status-txt">Acertos: 0 / Respondidas: 0</div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-sortear" onclick="sortear()">🔀 Reiniciar / Embaralhar</button>
+        <button class="btn-trocar" onclick="alternarMateria()">📚 Trocar Matéria</button>
     </div>
 
     <div id="quiz"></div>
 
-    <button class="finalizar" onclick="finalizar()">Finalizar Questionário</button>
-
-    <div id="resultado" class="resultado"></div>
+    <button class="btn-finalizar" onclick="finalizar()">Ver Resultado Final</button>
+    <div id="resultado" class="resultado-box"></div>
 </div>
 
 <script>
-// --- BANCO DE DADOS DAS MATÉRIAS ---
-const bancoDados = {
+const banco = {
     tecnologia: {
-        nome: "Tecnologia e Interpretação de Dados",
+        nome: "TECNOLOGIA EMERGENTE E PROTAGONISMO",
         questoes: [
             {q:"O movimento Ciência Aberta tem como principal objetivo:",a:["Acabar com o monopólio do conhecimento e incentivar a construção coletiva","Privatizar acervos de documentos acadêmicos","Restringir o acesso a dados para pesquisadores seniores","Cobrar assinaturas caras de instituições de ensino"],c:0},
             {q:"Qual a sequência correta da transformação de dados na Ciência?",a:["Dados em informações e depois em conhecimento","Conhecimento em dados e depois em crenças","Informações em dados e depois em interpretação","Interpretação em crenças e depois em dados"],c:0},
@@ -129,7 +166,7 @@ const bancoDados = {
             {q:"O 'Data Mining' (Mineração de Dados) serve para:",a:["Extrair informações úteis e padrões de grandes conjuntos de dados","Cavar buracos para passar cabos de fibra óptica","Criar novos dados do zero sem base real","Deletar informações de bancos de dados antigos"],c:0},
             {q:"No contexto do RH do futuro, as tecnologias visam:",a:["Liberar funcionários de tarefas repetitivas para focarem no estratégico","Substituir todos os seres humanos por robôs humanoides","Diminuir a necessidade de pensamento crítico","Acabar com a necessidade de treinamento de pessoal"],c:0},
             {q:"O 'ChatGPT' é baseado em qual tipo de tecnologia?",a:["Inteligência Artificial e Machine Learning","Apenas um banco de dados estático de perguntas e respostas","Processamento de sinais de rádio analógicos","Redes de televisão por satélite"],c:0},
-            {q:"A plataforma 'Scielo' é conhecida por oferecer:",a:["Acesso gratuito a artigos acadêmicos e modelo cooperativo","Venda de livros didáticos por preços altos","Serviços de streaming de filmes científicos","Notícias de jornalismo sensacionalista"],c:0},
+            {q:"A plataforma 'Scielo' é conhecida por oferecer:",a:["Acesso gratuito a artigos acadêmicos e modelo cooperativo","Venda de livros didáticos por preços altos","Serviços de streaming de filmes científicos","Notícias de jornalismo sensacionalista"],c:0},
             {q:"Um desafio citado sobre o ChatGPT na ciência é:",a:["A falta de coerência e a fixação em pensamentos do senso comum","O excesso de criatividade e originalidade nos textos","A capacidade de sentir emoções humanas profundas","O fato de ele ser uma ferramenta paga e inacessível"],c:0},
             {q:"A 'Hemeroteca Digital' da Biblioteca Nacional contém:",a:["Periódicos impressos digitalizados desde o período do Império","Apenas livros didáticos de matemática atualizados","Vídeos de redes sociais sobre história do Brasil","Códigos-fonte de softwares governamentais"],c:0},
             {q:"O 'Business Intelligence' (BI) utiliza dados para:",a:["Apoiar a tomada de decisões estratégicas","Apenas para enviar spam para clientes","Esconder os resultados financeiros da empresa","Substituir o planejamento estratégico humano"],c:0},
@@ -206,118 +243,86 @@ const bancoDados = {
     }
 };
 
-// --- LÓGICA DO SISTEMA ---
-let materiaAtual = "tecnologia";
+let materiaAtiva = "tecnologia";
 let perguntas = [];
 let respostas = [];
 
-function alternarMateria() {
-    materiaAtual = (materiaAtual === "tecnologia") ? "fge" : "tecnologia";
-    document.getElementById("materia-nome").innerText = "Matéria: " + bancoDados[materiaAtual].nome;
-    document.getElementById("resultado").innerHTML = "";
-    document.getElementById("resultado").style.background = "transparent";
-    sortear();
-}
-
-function embaralhar(arr){
-    return arr.map(v=>({v, s:Math.random()}))
-              .sort((a,b)=>a.s-b.s)
-              .map(o=>o.v);
-}
-
-function prepararPerguntas(){
-    // Pega as questões da matéria atual do banco de dados
-    let baseOriginal = JSON.parse(JSON.stringify(bancoDados[materiaAtual].questoes));
-    
-    perguntas = embaralhar(baseOriginal).map(p => {
-        let alternativas = embaralhar(
-            p.a.map((texto, idx) => ({
-                texto,
-                correta: idx === p.c
-            }))
-        );
-        return {
-            q: p.q,
-            a: alternativas.map(a => a.texto),
-            c: alternativas.findIndex(a => a.correta)
-        };
+function preparar() {
+    let base = JSON.parse(JSON.stringify(banco[materiaAtiva].questoes));
+    perguntas = base.map(p => ({v: p, s: Math.random()})).sort((a,b)=>a.s-b.s).map(o=>o.v);
+    perguntas = perguntas.map(p => {
+        let alts = p.a.map((texto, idx) => ({texto, c: idx === p.c, s: Math.random()})).sort((a,b)=>a.s-b.s);
+        return { q: p.q, a: alts.map(a=>a.texto), c: alts.findIndex(a=>a.c) };
     });
     respostas = new Array(perguntas.length).fill(null);
 }
 
-function render(){
-    const quiz=document.getElementById("quiz");
-    quiz.innerHTML="";
+function stats() {
+    let resp = respostas.filter(r => r !== null).length;
+    let acertos = 0;
+    respostas.forEach((r, i) => { if(r === perguntas[i].c) acertos++; });
+    document.getElementById("status-txt").innerText = `Acertos: ${acertos} / Respondidas: ${resp} de ${perguntas.length}`;
+    document.getElementById("barra").style.width = ((resp/perguntas.length)*100) + "%";
+}
+
+function responder(perguntaIndex, alternativaIndex) {
+    if(respostas[perguntaIndex] !== null) return; 
+    respostas[perguntaIndex] = alternativaIndex;
+    stats();
+    render(); 
+}
+
+function render() {
+    const quiz = document.getElementById("quiz");
+    quiz.innerHTML = "";
     
-    perguntas.forEach((p,i)=>{
-        const div=document.createElement("div");
-        div.className="question";
-        const titulo=document.createElement("p");
-        titulo.innerHTML=`<strong>${i+1}. ${p.q}</strong>`;
-        div.appendChild(titulo);
-
-        p.a.forEach((alt,j)=>{
-            const label=document.createElement("label");
-            const input=document.createElement("input");
-            input.type="radio";
-            input.name="q"+i;
-            input.checked=respostas[i]===j;
-            input.onclick=()=>{
-                respostas[i]=j;
-                render();
-            };
-            label.appendChild(input);
-            label.append(" "+alt);
-
-            if(respostas[i]!==null){
-                if(j===p.c){
-                    label.className="correct";
-                    if(respostas[i] === j) div.classList.add("correct");
-                } else if(j===respostas[i]){
-                    label.className="wrong";
-                    div.classList.add("wrong");
-                }
+    perguntas.forEach((p, i) => {
+        const jaRespondeu = respostas[i] !== null;
+        const div = document.createElement("div");
+        div.className = "question" + (jaRespondeu ? " answered" : "");
+        div.innerHTML = `<p><strong>${i+1}. ${p.q}</strong></p>`;
+        
+        p.a.forEach((alt, j) => {
+            const label = document.createElement("label");
+            if(jaRespondeu) {
+                if(j === p.c) label.classList.add("correct");
+                if(respostas[i] === j && j !== p.c) label.classList.add("wrong");
+                if(respostas[i] === j) div.classList.add(j === p.c ? "correct" : "wrong");
             }
+            label.onclick = () => responder(i, j);
+            label.innerHTML = `<span>${alt}</span>`;
             div.appendChild(label);
         });
         quiz.appendChild(div);
     });
 }
 
-function sortear(){
-    prepararPerguntas();
-    document.getElementById("resultado").innerHTML="";
-    document.getElementById("resultado").style.background = "transparent";
-    render();
-    window.scrollTo(0,0);
+function sortear() { 
+    preparar(); 
+    document.getElementById("resultado").style.display = "none"; 
+    stats(); 
+    render(); 
+    window.scrollTo(0,0); 
 }
 
-function finalizar(){
-    let pontos=0;
+function alternarMateria() { 
+    materiaAtiva = (materiaAtiva === "tecnologia") ? "fge" : "tecnologia"; 
+    document.getElementById("materia-txt").innerText = "Matéria: " + banco[materiaAtiva].nome; 
+    sortear(); 
+}
+
+function finalizar() {
+    let acertos = 0;
     let total = perguntas.length;
-    let todasRespondidas = true;
-
-    respostas.forEach((r,i)=>{
-        if(r===null) todasRespondidas = false;
-        if(r===perguntas[i].c) pontos++;
-    });
-
-    if(!todasRespondidas) {
-        if(!confirm("Você não respondeu todas as questões. Deseja finalizar assim mesmo?")) return;
-    }
-
+    respostas.forEach((r, i) => { if(r === perguntas[i].c) acertos++; });
     const resDiv = document.getElementById("resultado");
-    const perc = (pontos/total)*100;
-    
-    resDiv.innerHTML = `Você acertou ${pontos} de ${total} questões (${perc.toFixed(1)}%).`;
-    resDiv.style.background = perc >= 70 ? "#dcfce7" : "#fee2e2";
-    resDiv.style.color = perc >= 70 ? "#16a34a" : "#dc2626";
-    
-    window.scrollTo(0, document.body.scrollHeight);
+    resDiv.style.display = "block";
+    resDiv.innerHTML = `Simulado Concluído!<br>Pontuação: ${acertos} de ${total} (${((acertos/total)*100).toFixed(1)}%)`;
+    resDiv.style.background = (acertos/total >= 0.7) ? "#dcfce7" : "#fee2e2";
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 
-// Inicia o sistema
-prepararPerguntas();
+preparar();
 render();
 </script>
 </body>
